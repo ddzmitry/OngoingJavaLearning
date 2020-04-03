@@ -4,6 +4,8 @@ import com.ddzmitry.todolist.datamodel.TodoData;
 import com.ddzmitry.todolist.datamodel.TodoItem;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -37,6 +39,10 @@ public class Controller {
     @FXML
     private BorderPane mainBorderPane;
 
+    @FXML
+    private ContextMenu listContextMenu;
+
+
 
     public void initialize() {
 
@@ -60,6 +66,18 @@ public class Controller {
 //        todoItems.add(item5);
 //        TodoData.getInstance().setTodoItems(todoItems);
 
+        // Initialize content menut (right-click on todo item)
+        listContextMenu = new ContextMenu();
+        MenuItem deleteMenuItem = new MenuItem("Delete");
+        deleteMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                TodoItem item = todoListView.getSelectionModel().getSelectedItem();
+                deleteItem(item);
+
+            }
+        });
+        listContextMenu.getItems().addAll(deleteMenuItem);
         todoListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TodoItem>() {
             @Override
             public void changed(ObservableValue<? extends TodoItem> observable, TodoItem oldValue, TodoItem newValue) {
@@ -87,26 +105,37 @@ public class Controller {
             // go through cells
             @Override
             public ListCell<TodoItem> call(ListView<TodoItem> param) {
-                ListCell<TodoItem> cell = new ListCell<TodoItem>(){
+                ListCell<TodoItem> cell = new ListCell<TodoItem>() {
                     @Override
                     protected void updateItem(TodoItem item, boolean empty) {
                         //update each cell
                         super.updateItem(item, empty);
                         // check if cell is empty
-                        if(empty){
+                        if (empty) {
                             setText(null);
-                        } else{
+                        } else {
                             setText(item.getShortDescription());
-                            if(item.getDeadline().isBefore(LocalDate.now().plusDays(1))){
+                            if (item.getDeadline().isBefore(LocalDate.now().plusDays(1))) {
                                 // If DATE IS TODAY OR PAST DUE
                                 setTextFill(Color.RED);
                                 // IF DUE DATE TOMOROW
-                            } else if(item.getDeadline().equals(LocalDate.now().plusDays(1))){
+                            } else if (item.getDeadline().equals(LocalDate.now().plusDays(1))) {
                                 setTextFill(Color.BROWN);
-                            };
+                            }
+                            ;
                         }
                     }
                 };
+                cell.emptyProperty().addListener(
+                        (obs,wasEmpty,isNowEmpty) -> {
+                            if(isNowEmpty){
+                                cell.setContextMenu(null);
+                            } else{
+                                // Add ability to click only on items that have text
+                                cell.setContextMenu(listContextMenu);
+                            }
+                        }
+                );
                 return cell;
             }
         });
@@ -128,7 +157,7 @@ public class Controller {
         try {
             dialog.getDialogPane().setContent(fxmlLoader.load());
 
-        } catch(IOException e) {
+        } catch (IOException e) {
             System.out.println("Couldn't load the dialog");
             e.printStackTrace();
             return;
@@ -138,13 +167,13 @@ public class Controller {
         dialog.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
 
         Optional<ButtonType> result = dialog.showAndWait();
-        if(result.isPresent()  && result.get().equals(ButtonType.OK)){
+        if (result.isPresent() && result.get().equals(ButtonType.OK)) {
 
             DialogController controller = fxmlLoader.getController();
             TodoItem newItem = controller.processResults();
 
             // Push data to todoListView
-           // todoListView.getItems().setAll(TodoData.getInstance().getTodoItems()); // Using Observable now
+            // todoListView.getItems().setAll(TodoData.getInstance().getTodoItems()); // Using Observable now
             // Select new Item
             todoListView.getSelectionModel().select(newItem);
 
@@ -167,6 +196,20 @@ public class Controller {
 
         todoDescription.setText(item.getDetails());
         deadlineLabel.setText(item.getDeadline().toString());
+
+    }
+    @FXML
+    public void deleteItem(TodoItem item){
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Delete Todo Item");
+        alert.setHeaderText("Delete item: " + item.getShortDescription());
+        alert.setContentText("Are you sure? Press OK to confirm, or cancel to Back out");
+        // Result from alert
+        Optional<ButtonType> result = alert.showAndWait();
+        // Check if OK
+        if(result.isPresent() && (result.get() == ButtonType.OK)){
+            TodoData.getInstance().deleteTodoItem(item);
+        }
 
     }
 
