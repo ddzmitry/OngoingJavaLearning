@@ -37,8 +37,9 @@ public class TodoItem {
         this.deadline = deadline;
     }
 
-    @Override
-    public String toString() {
-        return shortDescription;
-    }
+    // CellFactory makes it replaceble
+//    @Override
+//    public String toString() {
+//        return shortDescription;
+//    }
 }
