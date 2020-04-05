@@ -1,28 +1,64 @@
 package Model;
 
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class Product {
 
 
-    protected static ObservableList<Part> parts = FXCollections.observableArrayList();
-    protected final int id;
-    protected final String name;
-    protected final Double price;
-    protected final int stock;
-    protected final int min;
-    protected final int max;
+    private static ObservableList<Part> parts = FXCollections.observableArrayList();
+    protected final int ProductID;
+    protected final String ProductName;
+    protected final Double ProductPrice;
+    protected final int ProductStock;
+    protected final int ProductMin;
+    protected final int ProductMax;
 
-    public Product(int id, String name, Double price, int stock, int min, int max) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
-        this.stock = stock;
-        this.min = min;
-        this.max = max;
+    public Product(int productID, String productName, Double productPrice, int productStock, int productMin, int productMax) {
+        ProductID = productID;
+        ProductName = productName;
+        ProductPrice = productPrice;
+        ProductStock = productStock;
+        ProductMin = productMin;
+        ProductMax = productMax;
     }
 
+
+    // Getters and setters
+    public static ObservableList<Part> getParts() {
+        return parts;
+    }
+
+    public static void setParts(ObservableList<Part> parts) {
+        Product.parts = parts;
+    }
+
+    public int getProductID() {
+        return ProductID;
+    }
+
+    public String getProductName() {
+        return ProductName;
+    }
+
+    public Double getProductPrice() {
+        return ProductPrice;
+    }
+
+    public int getProductStock() {
+        return ProductStock;
+    }
+
+    public int getProductMin() {
+        return ProductMin;
+    }
+
+    public int getProductMax() {
+        return ProductMax;
+    }
 
     // Other Methods
     public void addAssociatedPart(Part part) {
@@ -39,7 +75,7 @@ public class Product {
     public boolean deleteAssociatedPart(Part part) {
         // Traverse through parts and if part exists , then pop it
         for (Part innerPart : parts) {
-            if (innerPart.getId() == part.getId()) {
+            if (innerPart.getPartID() == part.getPartID()) {
 
                 parts.remove(part);
                 return true;
@@ -58,12 +94,11 @@ public class Product {
 
     // We need to make sure that price of part will be more then a price of the Product will be >= Sum of its parts
     public static String isProductValid(String name, double price, int stock, int min, int max, ObservableList<Part> parts) {
-
-        // Check the sum of parts
         double sumPartsValue = 0.0;
         for (Part innerPart : parts) {
-            sumPartsValue += innerPart.getPrice();
+            sumPartsValue += innerPart.getPartPrice();
         }
+
 
         StringBuilder errorMessage;
         errorMessage = new StringBuilder();

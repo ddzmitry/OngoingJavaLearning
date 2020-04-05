@@ -1,46 +1,46 @@
 package Model;
 
 public abstract class Part {
-    // Definition of fields
-    protected final int id;
-    protected final String name;
-    protected final Double price;
-    protected final int stock;
-    protected final int min;
-    protected final int max;
+    protected final int PartID;
+    protected final String PartName;
+    protected final Double PartPrice;
+    protected final int PartStock;
+    protected final int PartMin;
+    protected final int PartMax;
 
-    protected Part(int id, String name, Double price, int stock, int min, int max) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
-        this.stock = stock;
-        this.min = min;
-        this.max = max;
+    protected Part(int partID, String partName, Double partPrice, int partStock, int partMin, int partMax) {
+        PartID = partID;
+        PartName = partName;
+        PartPrice = partPrice;
+        PartStock = partStock;
+        PartMin = partMin;
+        PartMax = partMax;
     }
 
-    public int getId() {
-        return id;
+    public int getPartID() {
+        return PartID;
     }
 
-    public String getName() {
-        return name;
+    public String getPartName() {
+        return PartName;
     }
 
-    public Double getPrice() {
-        return price;
+    public Double getPartPrice() {
+        return PartPrice;
     }
 
-    public int getStock() {
-        return stock;
+    public int getPartStock() {
+        return PartStock;
     }
 
-    public int getMin() {
-        return min;
+    public int getPartMin() {
+        return PartMin;
     }
 
-    public int getMax() {
-        return max;
+    public int getPartMax() {
+        return PartMax;
     }
+
 /// Validation
 
     public static String isPartValid(String name,double price,int stock,int min , int max){

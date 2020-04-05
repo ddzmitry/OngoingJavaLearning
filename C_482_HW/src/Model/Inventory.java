@@ -7,8 +7,8 @@ import javafx.collections.ObservableList;
 public class Inventory {
 
     // All parts and products
-    private static ObservableList<Product> allProducts = FXCollections.observableArrayList();
-    private static ObservableList<Part> allParts = FXCollections.observableArrayList();
+    protected static ObservableList<Product> allProducts = FXCollections.observableArrayList();
+    protected static ObservableList<Part> allParts = FXCollections.observableArrayList();
 
     public static ObservableList<Product> getAllProducts() {
         return allProducts;
@@ -25,6 +25,8 @@ public class Inventory {
     public static void setAllParts(ObservableList<Part> allParts) {
         Inventory.allParts = allParts;
     }
+
+
 
     // Add Part, Product
     public static void addPart(Part part){

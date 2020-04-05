@@ -1,15 +1,7 @@
 package Main;
 
-import Model.Inventory;
-import Model.Outsourced;
-import Model.Part;
-import Model.Product;
+import Model.*;
 import javafx.application.Application;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -30,6 +22,8 @@ public class Main extends Application {
         Scene scene = new Scene(root);
         primaryStage.setTitle("Inventory Management System");
         primaryStage.setScene(scene);
+        // No Resizable
+        primaryStage.setResizable(false);
         primaryStage.show();
 
 
@@ -38,6 +32,56 @@ public class Main extends Application {
     }
 
     private void addTestData(Inventory inv) {
+
+        // Add InHouse Parts
+        Part a1 = new InHousePart(1,"Part A1",3.44,5,3,10,3);
+        Part a2 = new InHousePart(5,"Part A2",10.99,17,5,60,8);
+        Part b1 = new InHousePart(11,"Part B1",7.54,8,6,42,4);
+        Part b2 = new InHousePart(16,"Part B2",3.44,7,2,15,9);
+        //  Add Outsourced Parts
+        Part o1 = new Outsourced(10,"Part O1",13.99,6,5,32,"Special Delivery Co.");
+        Part o2 = new Outsourced(50,"Part O2",4.99,10,4,15,"Captain Jack Rabbit");
+        Part s1 = new Outsourced(18,"Part S1",13.94,3,8,67,"Captain Jack Rabbit");
+        Part s2 = new Outsourced(36,"Part S2",3.73,56,1,84,"Poofy and Goober Inx.");
+        // Add Parts
+        inv.addPart(a1);
+        inv.addPart(a2);
+        inv.addPart(b1);
+        inv.addPart(b2);
+        inv.addPart(o1);
+        inv.addPart(o2);
+        inv.addPart(s1);
+        inv.addPart(s2);
+        // Create Products
+        Product prod1 = new Product(100,"Product 1",18.99,3,7,42);
+        Product prod2 = new Product(200,"Product 2",36.61,6,3,32);
+        Product prod3 = new Product(300,"Product 3",69.99,12,3,18);
+        Product prod4 = new Product(400,"Product 4",54.88,7,6,55);
+        Product prod5 = new Product(500,"Product 5",66.99,42,10,16);
+        // add associations
+        prod1.addAssociatedPart(a1);
+//        prod1.addAssociatedPart(a2);
+
+//        prod2.addAssociatedPart(a2);
+//        prod2.addAssociatedPart(s1);
+
+//        prod3.addAssociatedPart(a1);
+//        prod3.addAssociatedPart(o2);
+//
+//        prod4.addAssociatedPart(s2);
+
+        prod5.addAssociatedPart(a1);
+//        prod5.addAssociatedPart(b2);
+//        prod5.addAssociatedPart(o2);
+//        prod5.addAssociatedPart(s2);
+
+        inv.addProduct(prod1);
+        inv.addProduct(prod2);
+        inv.addProduct(prod3);
+        inv.addProduct(prod4);
+        inv.addProduct(prod5);
+
+
 
     }
 
