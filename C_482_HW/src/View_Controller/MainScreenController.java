@@ -11,14 +11,19 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class MainScreenController implements Initializable {
@@ -30,6 +35,7 @@ public class MainScreenController implements Initializable {
     // Serchebles
     private ObservableList<Part> partInvSearch = FXCollections.observableArrayList();
     private ObservableList<Product> productInvSearch = FXCollections.observableArrayList();
+    private String PartsearchParams;
 
 
     @FXML // fx:id="root"
@@ -39,13 +45,13 @@ public class MainScreenController implements Initializable {
     private TableView<Part> viewParts; // Value injected by FXMLLoader
 
     @FXML
-    private TableColumn<Part, Integer>  viewPartID;
+    private TableColumn<Part, Integer> viewPartID;
 
     @FXML
     private TableColumn<Part, String> viewPartName;
 
     @FXML
-    private TableColumn<Part, Integer>  viewPartStock;
+    private TableColumn<Part, Integer> viewPartStock;
 
 
     @FXML // fx:id="buttonSearchParts"
@@ -112,41 +118,92 @@ public class MainScreenController implements Initializable {
     @FXML
     void activateDeletePartsScreen(ActionEvent event) {
         // We need to find which part is being selected
-        Part partSelected =  viewParts.getSelectionModel().getSelectedItem();
-        // Ve need to Validate if part is being possessed by any PRODUCTS
-        boolean found = false;
-        StringBuilder warningMessage;
-        warningMessage = new StringBuilder();
+        if (partInv.size() != 0) {
+            Part partSelected = viewParts.getSelectionModel().getSelectedItem();
+            // Ve need to Validate if part is being possessed by any PRODUCTS
 
-        for(Product product: productInv){
-            for(Part innerPart: product.getAssociatedPartsList()){
-                System.out.println(innerPart.getPartID());
-                if(innerPart.getPartID() == partSelected.getPartID()){
-                    warningMessage.append(String.format("Product name: %s\n",product.getProductName()));
+            boolean found = false;
+            StringBuilder warningMessage;
+            warningMessage = new StringBuilder();
+
+            for (Product product : productInv) {
+                if (product.getAssociatedPartsList().contains(partSelected)) {
+                    warningMessage.append(String.format("Product name: %s \n", product.getProductName()));
                     found = true;
                 }
             }
+
+            if (found) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Deletion Error");
+                alert.setHeaderText("Part cannot be deleted!");
+                alert.setContentText("Part is being used by.\n" + warningMessage.toString());
+                alert.showAndWait();
+            } else {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.initModality(Modality.NONE);
+                alert.setTitle(String.format("Delete Part ID: " + partSelected.getPartID()));
+                alert.setHeaderText("Confirm?");
+                alert.setContentText("Are you sure you want to delete Part: " + partSelected.getPartName() + "?");
+                // wait for result
+                Optional<ButtonType> result = alert.showAndWait();
+                // check
+                if (result.get() == ButtonType.OK) {
+                    partInv.remove(partSelected);
+                    viewParts.setItems(partInv);
+                    System.out.println(" Part " + partSelected.getPartName() + " was removed");
+                } else {
+                    System.out.println("Not removing");
+                }
+
+                // clear in case if there is output
+                if (dataSearchParts.getText() != null) {
+
+                    dataSearchParts.clear();
+                    buttonSearchParts.setText("Search");
+                }
+            }
+        } else {
+            Alert nodataToRemove = new Alert(Alert.AlertType.INFORMATION);
+            nodataToRemove.setTitle("There is nothing to remove");
+            nodataToRemove.setHeaderText("No parts available");
+            nodataToRemove.showAndWait();
         }
-
-        if(found){
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Deletion Error");
-            alert.setHeaderText("Part cannot be deleted!");
-            alert.setContentText("Part is being used by.\n" + warningMessage.toString());
-            alert.showAndWait();
-
-        } else{
-            System.out.println("Can Delete");
-            partInv.remove(partSelected);
-            viewParts.setItems(partInv);
-//            generatePartsTableValues();
-        }
-
-
     }
 
     @FXML
     void activateDeleteProductsScreen(ActionEvent event) {
+        // Deleting product
+        if (productInv.size() > 0) {
+            Product ProductSelected = viewProducts.getSelectionModel().getSelectedItem();
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.initModality(Modality.NONE);
+            alert.setTitle(String.format("Delete Product ID: " + ProductSelected.getParts()));
+            alert.setHeaderText("Confirm?");
+            alert.setContentText("Are you sure you want to delete Product: " + ProductSelected.getProductName() + "?");
+            // wait for result
+            Optional<ButtonType> result = alert.showAndWait();
+            // check
+            if (result.get() == ButtonType.OK) {
+                productInv.remove(ProductSelected);
+                viewProducts.setItems(productInv);
+                System.out.println(" Part " + ProductSelected.getProductName() + " was removed");
+            } else {
+                System.out.println("Not removing");
+            }
+
+        } else {
+            Alert nodataToRemove = new Alert(Alert.AlertType.INFORMATION);
+            nodataToRemove.setTitle("There is nothing to remove");
+            nodataToRemove.setHeaderText("No Products available");
+            nodataToRemove.showAndWait();
+        }
+
+        if (dataSearchProducts.getText() != null) {
+
+            dataSearchProducts.clear();
+            buttonSearchProducts.setText("Search");
+        }
 
     }
 
@@ -171,7 +228,7 @@ public class MainScreenController implements Initializable {
     }
 
     @FXML
-    void exitApp(){
+    void exitApp() {
         Platform.exit();
     }
 
@@ -180,44 +237,89 @@ public class MainScreenController implements Initializable {
         generatePartsTableValues();
         generateProductsTableValues();
     }
-    @FXML
-    private void generatePartsTableValues() {
-        partInv.addAll(inv.getAllParts());
-        // to preserve dollar sign
-//        TableColumn<Part,Double> priceColl = formatPrice("Part");
-//        viewParts.getColumns().addAll(priceColl);
-        viewParts.setItems(partInv);
+
+
+    /*
+     * @generateSearchPartsTableValues
+     * @generateSearchProductsTableValues
+     * Regenerate data based of the search
+     * */
+    private void generateSearchPartsTableValues() {
+
+        viewParts.setItems(partInvSearch);
         viewParts.refresh();
+        if (partInvSearch.size() > 0 && partInvSearch.size() != partInv.size()) {
+            buttonSearchParts.setText(String.format("Found(%s)", partInvSearch.size()));
+        } else {
+            buttonSearchParts.setText("Search");
+        }
+
     }
+
+    private void generateSearchProductsTableValues() {
+        viewProducts.setItems(productInvSearch);
+        viewProducts.refresh();
+        if (productInvSearch.size() > 0 && productInvSearch.size() != productInv.size()) {
+            buttonSearchProducts.setText(String.format("Found(%s)", productInvSearch.size()));
+        } else {
+            buttonSearchProducts.setText("Search");
+        }
+
+    }
+
+    /*
+     *
+     * Table view generators
+     *
+     * */
     @FXML
     private void generateProductsTableValues() {
         productInv.addAll(inv.getAllProducts());
-//        TableColumn<Product,Double> priceColl = formatPrice("Product");
-//        viewProducts.getColumns().addAll(priceColl);
         viewProducts.setItems(productInv);
         viewProducts.refresh();
     }
 
-    // will work for both
-//    private <T> TableColumn<T,Double> formatPrice(String ClassName) {
-//     TableColumn<T,Double> priceColl = new TableColumn("Price");
-//        priceColl.setResizable(false);
-//        // Pick ProductPrice , PartPrice
-//        priceColl.setCellValueFactory(new PropertyValueFactory<>( String.format("%sPrice",ClassName)));
-//
-//        priceColl.setCellFactory((TableColumn<T,Double> col)->{
-//            return new TableCell<T, Double>(){
-//                @Override
-//                protected void updateItem(Double item,boolean isempty){
-//                    if(!isempty){
-//                        setText("$" + String.format("%10.2f",item));
-//                    }
-//                }
-//            };
-//        }
-//        );
-//        return priceColl;
-//    }
+    @FXML
+    private void generatePartsTableValues() {
+        partInv.addAll(inv.getAllParts());
+        viewParts.setItems(partInv);
+        viewParts.refresh();
+    }
 
+    @FXML
+    private void partFuzzySearch(Event e) {
+        //clear observable
+        partInvSearch.clear();
+        for (Part p : partInv) {
+            // Fizzy Search on contains function
+            if (p.getPartName().toLowerCase().contains(dataSearchParts.getText().toLowerCase())) {
+                //append to observable
+                partInvSearch.add(p);
+
+            }
+
+        }
+
+
+        generateSearchPartsTableValues();
+
+    }
+
+    @FXML
+    private void productFuzzySearch(Event e) {
+        System.out.println("PRODUCT SEARCH");
+        //clear observable
+        productInvSearch.clear();
+        for (Product p : productInv) {
+            // Fizzy Search on contains function
+            System.out.println(p.getProductName());
+            if (p.getProductName().toLowerCase().contains(dataSearchProducts.getText().toLowerCase())) {
+                //append to observable
+                productInvSearch.add(p);
+            }
+
+        }
+        generateSearchProductsTableValues();
+    }
 
 }

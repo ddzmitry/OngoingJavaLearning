@@ -51,10 +51,13 @@
             <Font size="26.0" />
          </font>
       </Label>
-      <Button fx:id="buttonSearchParts" layoutX="307.0" layoutY="151.0" mnemonicParsing="false" text="Search" />
-      <TextField fx:id="dataSearchParts" layoutX="364.0" layoutY="151.0" promptText="Lookup part name" />
-      <TextField fx:id="dataSearchProducts" layoutX="870.0" layoutY="151.0" promptText=" Lookup product name" />
-      <Button fx:id="buttonSearchProducts" layoutX="813.0" layoutY="151.0" mnemonicParsing="false" text="Search" />
+      <Button fx:id="buttonSearchParts" layoutX="271.0" layoutY="151.0" mnemonicParsing="false" onAction="#partFuzzySearch" prefHeight="27.0" prefWidth="77.0" text="Search" />
+      <TextField fx:id="dataSearchParts" layoutX="364.0" layoutY="151.0" onKeyPressed="#partFuzzySearch" promptText="Lookup part name" />
+
+      <TextField fx:id="dataSearchProducts" layoutX="870.0" layoutY="151.0" promptText=" Lookup product name" onKeyPressed="#productFuzzySearch" />
+      <Button fx:id="buttonSearchProducts" layoutX="777.0" layoutY="151.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="77.0" text="Search" onAction="#productFuzzySearch" />
+
+
       <TableView fx:id="viewProducts" layoutX="553.0" layoutY="185.0" prefHeight="171.0" prefWidth="476.0">
 
          <columns>
@@ -92,7 +95,7 @@
          <buttons>
             <Button fx:id="buttonAddProducts" mnemonicParsing="false" text="Add" />
             <Button fx:id="buttonModifyProducts" mnemonicParsing="false" text="Modify" />
-            <Button fx:id="buttonDeleteProducts" mnemonicParsing="false" prefHeight="27.0" prefWidth="124.0" text="Delete" />
+            <Button fx:id="buttonDeleteProducts" onAction="#activateDeleteProductsScreen" mnemonicParsing="false" prefHeight="27.0" prefWidth="124.0" text="Delete" />
          </buttons>
       </ButtonBar>
    </children>

@@ -1,21 +1,18 @@
 package Model;
 
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class Product {
 
 
-    private static ObservableList<Part> parts = FXCollections.observableArrayList();
-    protected final int ProductID;
-    protected final String ProductName;
-    protected final Double ProductPrice;
-    protected final int ProductStock;
-    protected final int ProductMin;
-    protected final int ProductMax;
+    private final ObservableList<Part> associatedParts =  FXCollections.observableArrayList();
+    private final int ProductID;
+    private final String ProductName;
+    private final Double ProductPrice;
+    private final int ProductStock;
+    private final int ProductMin;
+    private final int ProductMax;
 
     public Product(int productID, String productName, Double productPrice, int productStock, int productMin, int productMax) {
         ProductID = productID;
@@ -28,13 +25,13 @@ public class Product {
 
 
     // Getters and setters
-    public static ObservableList<Part> getParts() {
-        return parts;
+    public ObservableList<Part> getParts() {
+        return this.associatedParts;
     }
 
-    public static void setParts(ObservableList<Part> parts) {
-        Product.parts = parts;
-    }
+//    public static void setParts(ObservableList<Part> parts) {
+//        Product.associatedParts = parts;
+//    }
 
     public int getProductID() {
         return ProductID;
@@ -63,10 +60,12 @@ public class Product {
     // Other Methods
     public void addAssociatedPart(Part part) {
         // If part is already there , dont add it
-        if (parts.contains(part)) {
+        System.out.println("ADD PART CALLED");
+        System.out.println("FOR PRODUCT " + this.getProductName());
+        if (this.associatedParts.contains(part)) {
             System.out.println("Part is already added");
         } else {
-            parts.add(part);
+            this.associatedParts.add(part);
         }
     }
 
@@ -74,10 +73,10 @@ public class Product {
 
     public boolean deleteAssociatedPart(Part part) {
         // Traverse through parts and if part exists , then pop it
-        for (Part innerPart : parts) {
+        for (Part innerPart : associatedParts) {
             if (innerPart.getPartID() == part.getPartID()) {
 
-                parts.remove(part);
+                associatedParts.remove(part);
                 return true;
             }
         }
@@ -85,7 +84,7 @@ public class Product {
     }
 
     public ObservableList<Part> getAssociatedPartsList() {
-        return parts;
+        return associatedParts;
     }
 
     ;
