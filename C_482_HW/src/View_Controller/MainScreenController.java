@@ -13,7 +13,11 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
@@ -22,6 +26,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -103,11 +108,6 @@ public class MainScreenController implements Initializable {
     // Get inventory to constructor
     public MainScreenController(Inventory inv) {
         this.inv = inv;
-    }
-
-    @FXML
-    void activateAddPartsScreen(ActionEvent event) {
-
     }
 
     @FXML
@@ -307,7 +307,6 @@ public class MainScreenController implements Initializable {
 
     @FXML
     private void productFuzzySearch(Event e) {
-        System.out.println("PRODUCT SEARCH");
         //clear observable
         productInvSearch.clear();
         for (Product p : productInv) {
@@ -322,4 +321,41 @@ public class MainScreenController implements Initializable {
         generateSearchProductsTableValues();
     }
 
+    /*
+    * Add Part/Product Screens
+    *
+    * */
+
+    @FXML
+    private void activateAddPartsScreen(ActionEvent event) throws IOException {
+
+        try{
+            FXMLLoader loader = new FXMLLoader();
+            View_Controller.AddPartController controller = new View_Controller.AddPartController(inv);
+            // Add controller programatically to keep persistant storage
+            loader.setController(controller);
+            loader.setLocation(getClass().getResource("AddPart.fxml"));
+            Parent product_page_parent = loader.load();
+            Scene main_page_scene = new Scene(product_page_parent);
+            Stage app_stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            app_stage.hide(); //optional
+            app_stage.setScene(main_page_scene);
+            app_stage.show();
+        } catch (IOException err){
+            System.out.println("Couldn't load template");
+            System.out.println(err.getMessage());
+            return;
+        }
+
+    }
+
+
+//    public void startMain(Stage app_stage) throws IOException {
+//        index = -1;//reset index each time main screen loads
+//        Parent part_page_parent = FXMLLoader.load(getClass().getResource("Main_screen.fxml"));
+//
+//        Scene part_page_scene = new Scene(part_page_parent);
+//        app_stage.setScene(part_page_scene);
+//        app_stage.show();
+//    }
 }

@@ -3,6 +3,9 @@ package Model;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.util.ArrayList;
+import java.util.Random;
+
 // Inventory of all items in the application
 public class Inventory {
 
@@ -27,9 +30,32 @@ public class Inventory {
     }
 
 
+    public static Integer generateId(){
+        Random r = new Random();
+        return r.nextInt((1000 - 1) + 1) + 1;
+    };
+    public static Integer generateIdPart(){
+        // Little Recursion here
+        Integer id = generateId();
+        System.out.println("ID is " + id);
+        ArrayList<Integer> partIds = new ArrayList<>();
+        for (Part p : getAllParts()){
+            partIds.add(p.getPartID());
+        }
+
+        if(partIds.contains(id)){
+            return generateIdPart();
+        }
+
+        return  id;
+
+    };
+
+
 
     // Add Part, Product
     public static void addPart(Part part){
+
         if (part !=null){
             allParts.add(part);
         }

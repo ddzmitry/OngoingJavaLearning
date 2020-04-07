@@ -47,7 +47,7 @@ public abstract class Part {
         StringBuilder errorMessage;
         errorMessage = new StringBuilder();
 
-        if(name == null){
+        if(name.isEmpty()){
             errorMessage.append("The name field is REQUIRED.\n");
         } else if( price <= 0){
             errorMessage.append("Price cannot be negative or zero.\n");

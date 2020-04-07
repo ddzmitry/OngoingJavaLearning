@@ -12,7 +12,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
         Inventory inv = new Inventory();
-        // Add Test Data per lecture
+//        // Add Test Data per lecture
         addTestData(inv);
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/View_Controller/Main_screen.fxml"));
         // Apply Controller to the fxml file
@@ -27,7 +27,9 @@ public class Main extends Application {
         primaryStage.show();
 
 
-
+//        Parent root = FXMLLoader.load(getClass().getResource("/View_Controller/AddPart.fxml"));
+//        primaryStage.setScene(new Scene(root, 900, 500));
+//        primaryStage.show();
 
     }
 
