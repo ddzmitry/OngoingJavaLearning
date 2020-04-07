@@ -82,7 +82,7 @@ public class AddPartController {
         Parent product_page_parent = loader.load();
         Scene main_page_scene = new Scene(product_page_parent);
         Stage app_stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        app_stage.hide(); //optional
+        app_stage.hide();
         app_stage.setScene(main_page_scene);
         app_stage.show();
     }
@@ -265,14 +265,14 @@ public class AddPartController {
                 inv.addPart(new Outsourced(partId,Name, Price, Stock, MinVal, MaxVal, MachineIdOrCompany));
                 AddPartCancel(event);
             }
-
+        // TODO: 4/6/20 When Part is added need to clear filelds and have form avaliable again
         } else {
             validatedValue = InHousePart.isPartValid(Name, Price, Stock, MinVal, MaxVal, MachineIdOrCompany);
             if(!validatedValue.isEmpty()){
                 AlertValidation(validatedValue);
             } else {
                 inv.addPart(new InHousePart(partId,Name, Price, Stock, MinVal, MaxVal, Integer.parseInt(MachineIdOrCompany)));
-//                loadMain(event);
+
                 AddPartCancel(event);
             }
 

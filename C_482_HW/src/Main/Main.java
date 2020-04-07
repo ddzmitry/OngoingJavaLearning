@@ -6,11 +6,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+        primaryStage.initStyle(StageStyle.TRANSPARENT);
         Inventory inv = new Inventory();
 //        // Add Test Data per lecture
         addTestData(inv);
