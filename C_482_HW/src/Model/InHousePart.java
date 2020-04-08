@@ -12,7 +12,7 @@ public class InHousePart extends Part {
         this.machineId = machineId;
     }
 
-    public int getMachineId() {
+    public Integer getMachineId() {
         return machineId;
     }
 

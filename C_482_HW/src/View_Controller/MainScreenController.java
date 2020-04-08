@@ -7,6 +7,7 @@ package View_Controller;
 import Model.Inventory;
 import Model.Part;
 import Model.Product;
+import View_Controller.trash.UpdatePartController;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,12 +20,9 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 
 import java.io.IOException;
 import java.net.URL;
@@ -207,10 +205,7 @@ public class MainScreenController implements Initializable {
 
     }
 
-    @FXML
-    void activateModifyPartsScreen(ActionEvent event) {
 
-    }
 
     @FXML
     void activateModifyProductsScreen(ActionEvent event) {
@@ -331,7 +326,7 @@ public class MainScreenController implements Initializable {
 
         try{
             FXMLLoader loader = new FXMLLoader();
-            View_Controller.AddPartController controller = new View_Controller.AddPartController(inv);
+            View_Controller.AddPartController controller = new View_Controller.AddPartController(inv,null,null);
             // Add controller programatically to keep persistant storage
             loader.setController(controller);
             loader.setLocation(getClass().getResource("AddPart.fxml"));
@@ -349,13 +344,37 @@ public class MainScreenController implements Initializable {
 
     }
 
+    @FXML
+    void activateModifyPartsScreen(ActionEvent event) throws IOException {
 
-//    public void startMain(Stage app_stage) throws IOException {
-//        index = -1;//reset index each time main screen loads
-//        Parent part_page_parent = FXMLLoader.load(getClass().getResource("Main_screen.fxml"));
-//
-//        Scene part_page_scene = new Scene(part_page_parent);
-//        app_stage.setScene(part_page_scene);
-//        app_stage.show();
-//    }
+        if (partInv.size() != 0) {
+            Part partSelected = viewParts.getSelectionModel().getSelectedItem();
+            for (int i = 0; i < partInv.size(); i++) {
+                if(partSelected == partInv.get(i)){
+                    FXMLLoader loader = new FXMLLoader();
+                    View_Controller.AddPartController controller = new AddPartController(inv, partSelected,i);
+                    loader.setController(controller);
+                    loader.setLocation(getClass().getResource("AddPart.fxml"));
+                    Parent product_page_parent = loader.load();
+                    Scene main_page_scene = new Scene(product_page_parent);
+                    Stage app_stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                    app_stage.hide(); //optional
+                    app_stage.setScene(main_page_scene);
+                    app_stage.show();
+
+                }
+            }
+
+
+            //partSelected
+        }else {
+            Alert nodataToRemove = new Alert(Alert.AlertType.INFORMATION);
+            nodataToRemove.setTitle("There is nothing to modify");
+            nodataToRemove.setHeaderText("No Products available");
+            nodataToRemove.showAndWait();
+        }
+
+    }
+
+
 }
