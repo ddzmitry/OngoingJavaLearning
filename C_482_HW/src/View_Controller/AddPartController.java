@@ -11,11 +11,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class AddPartController implements Initializable {
@@ -30,9 +31,18 @@ public class AddPartController implements Initializable {
     private boolean isOutsoursed = false;
     private String MachineIdOrCompany = null;
     private Integer ProductId = null;
+    // Get inventory to constructor
+    Part partToUpdate;
+
+    public AddPartController(Inventory inv, Part part, Integer index) {
+
+        this.partToUpdate = part;
+        this.inv = inv;
+        this.index = index;
+    }
 
     @FXML
-    private  Label addOrUpdatePart;
+    private Label addOrUpdatePart;
 
     @FXML
     private Label UpdatePartID;
@@ -84,6 +94,7 @@ public class AddPartController implements Initializable {
     @FXML
     private Button btnAddPartCancel;
 
+
     // This is working
     @FXML
     void AddPartCancel(ActionEvent event) throws IOException {
@@ -115,7 +126,7 @@ public class AddPartController implements Initializable {
         addPartMorCValidation();
         addPartMorCValidator.setText(null);
 
-        if(partToUpdate != null){
+        if (partToUpdate != null) {
             addPartMachineId.setText(null);
         }
 
@@ -133,7 +144,7 @@ public class AddPartController implements Initializable {
         addPartMorCValidation();
         addPartMorCValidator.setText(null);
 
-        if(partToUpdate != null){
+        if (partToUpdate != null) {
             addPartMachineId.setText(null);
         }
     }
@@ -197,8 +208,8 @@ public class AddPartController implements Initializable {
     void addPartMinValidation(KeyEvent key) {
         /**     @FXML private TextField addPartMin;
          @FXML private  Label addPartMinValidator;*/
-        if(!key.getCode().toString().contains("TAB")){
-            if (addPartMin.getText()!=null && Util.isNumeric(addPartMin.getText())) {
+        if (!key.getCode().toString().contains("TAB")) {
+            if (addPartMin.getText() != null && Util.isNumeric(addPartMin.getText())) {
                 MinVal = Integer.parseInt(addPartMin.getText()); // will use this to construct
                 addPartMinValidator.setText(null);
                 if (Stock > MinVal) {
@@ -218,8 +229,8 @@ public class AddPartController implements Initializable {
     void addPartMaxValidation(KeyEvent key) {
         /** @FXML private TextField addPartMax;
          @FXML private  Label addPartMaxValidator;*/
-        if(!key.getCode().toString().contains("TAB")){
-            if (addPartMax.getText()!=null && Util.isNumeric(addPartMax.getText())) {
+        if (!key.getCode().toString().contains("TAB")) {
+            if (addPartMax.getText() != null && Util.isNumeric(addPartMax.getText())) {
                 MaxVal = Integer.parseInt(addPartMax.getText()); // will use this to construct
                 addPartMaxValidator.setText(null);
                 if (Stock > MaxVal) {
@@ -240,7 +251,7 @@ public class AddPartController implements Initializable {
          @FXML private  Label addPartMorCValidator;*/
         //MachineIdOrCompany
 
-        if (addPartMachineId.getText()!=null) {
+        if (addPartMachineId.getText() != null) {
 
             if (!isOutsoursed && Util.isNumeric(addPartMachineId.getText())) {
                 MachineIdOrCompany = addPartMachineId.getText();
@@ -258,22 +269,47 @@ public class AddPartController implements Initializable {
 
 
     }
+
     @FXML
     private static void AlertValidation(String validatedValue) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Error Inputs");
-            alert.setHeaderText("Did not Passed Check for Inventory");
-            alert.setContentText(validatedValue);
-            alert.showAndWait();
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Error Inputs");
+        alert.setHeaderText("Did not Passed Check for Inventory");
+        alert.setContentText(validatedValue);
+        alert.showAndWait();
+    }
+
+    @FXML
+    public static boolean AlerConformationAddUpdate(String Name, Integer index) {
+        System.out.println("AlerConformationAddUpdate CALLED");
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.initModality(Modality.NONE);
+
+        alert.setHeaderText("Confirm?");
+
+        if (index != null) {
+            alert.setTitle(String.format(String.format("Update Part: %s ", Name)));
+            alert.setContentText(String.format("Are you sure you want to update part: %s", Name));
+        } else {
+            alert.setTitle(String.format(String.format("Add Part: %s", Name)));
+            alert.setContentText(String.format("Are you sure you want to add part: %s", Name));
+        }
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.get() == ButtonType.OK) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @FXML
     void AddPartSave(ActionEvent event) throws IOException {
 
         Integer partId;
-        if(partToUpdate == null){
+        if (partToUpdate == null) {
             partId = Inventory.generateIdPart();
-        } else{
+        } else {
 
             partId = partToUpdate.getPartID();
         }
@@ -283,38 +319,55 @@ public class AddPartController implements Initializable {
         // if Outsoursed do check for outsoursed
         if (isOutsoursed) {
             validatedValue = Outsourced.isPartValid(Name, Price, Stock, MinVal, MaxVal, MachineIdOrCompany);
-            if(!validatedValue.isEmpty()){
+            if (!validatedValue.isEmpty()) {
                 // Alert if something wrong
                 AlertValidation(validatedValue);
-            } else{
+            } else {
 
-                if(partToUpdate == null){
-                    inv.addPart(new Outsourced(partId,Name, Price, Stock, MinVal, MaxVal, MachineIdOrCompany));
+                if (AlerConformationAddUpdate(Name, index)) {
 
-                } else{
-                    inv.updatePart(index,new Outsourced(partId,Name, Price, Stock, MinVal, MaxVal, MachineIdOrCompany));
+                    if (partToUpdate == null) {
+
+                        inv.addPart(new Outsourced(partId, Name, Price, Stock, MinVal, MaxVal, MachineIdOrCompany));
+                        AddPartCancel(event);
+
+                    } else {
+                        inv.updatePart(index, new Outsourced(partId, Name, Price, Stock, MinVal, MaxVal, MachineIdOrCompany));
+                        AddPartCancel(event);
+                    }
+                } else {
+
+                    System.out.println("Do nothing");
                 }
-                AddPartCancel(event);
+
 
             }
 
         } else {
             validatedValue = InHousePart.isPartValid(Name, Price, Stock, MinVal, MaxVal, MachineIdOrCompany);
-            if(!validatedValue.isEmpty()){
+            if (!validatedValue.isEmpty()) {
                 AlertValidation(validatedValue);
             } else {
-                if(partToUpdate == null){
-                    inv.addPart(new InHousePart(partId,Name, Price, Stock, MinVal, MaxVal, Integer.parseInt(MachineIdOrCompany)));
-                } else{
-                    inv.updatePart(index,new InHousePart(partId,Name, Price, Stock, MinVal, MaxVal, Integer.parseInt(MachineIdOrCompany)));
+
+                if (AlerConformationAddUpdate(Name, index)) {
+                    if (partToUpdate == null) {
+                        inv.addPart(new InHousePart(partId, Name, Price, Stock, MinVal, MaxVal, Integer.parseInt(MachineIdOrCompany)));
+                        AddPartCancel(event);
+                    } else {
+                        inv.updatePart(index, new InHousePart(partId, Name, Price, Stock, MinVal, MaxVal, Integer.parseInt(MachineIdOrCompany)));
+                        AddPartCancel(event);
+                    }
+
                 }
-                AddPartCancel(event);
+
+
             }
 
         }
 
     }
-    public void  populateFileds(){
+
+    public void populateFileds() {
         UpdatePartID.setText(String.valueOf(ProductId));
         addPartName.setText(Name);
         addPartStock.setText(String.valueOf(Stock));
@@ -325,21 +378,10 @@ public class AddPartController implements Initializable {
     }
 
 
-    // Get inventory to constructor
-    Part partToUpdate;
-    public AddPartController(Inventory inv, Part part, Integer index) {
-
-        this.partToUpdate = part;
-        this.inv = inv;
-        this.index = index;
-    }
-
-
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        if(partToUpdate != null){
+        if (partToUpdate != null) {
 
             Name = partToUpdate.getPartName();
             Stock = partToUpdate.getPartStock();
@@ -349,7 +391,7 @@ public class AddPartController implements Initializable {
             ProductId = partToUpdate.getPartID();
             addOrUpdatePart.setText("Update Part: " + Name);
 
-            if(partToUpdate.getClass().toString().contains("InHousePart")){
+            if (partToUpdate.getClass().toString().contains("InHousePart")) {
                 System.out.println("Inhouse");
                 InHousePart outsourcedUpdate = (InHousePart) partToUpdate;
                 System.out.println(outsourcedUpdate.getMachineId());
@@ -359,7 +401,7 @@ public class AddPartController implements Initializable {
                 addPartMachineId.setText(String.valueOf(outsourcedUpdate.getMachineId()));
                 MachineIdOrCompany = outsourcedUpdate.getMachineId().toString();
 
-            } else{
+            } else {
                 System.out.println("Outsoursed");
                 Outsourced outsourcedUpdate = (Outsourced) partToUpdate;
                 System.out.println(outsourcedUpdate.getCompanyName());

@@ -13,10 +13,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class AddProductController implements Initializable {
@@ -54,7 +56,6 @@ public class AddProductController implements Initializable {
         addParts.setItems(partInv);
         addParts.refresh();
     }
-
 
 
     @FXML
@@ -272,20 +273,47 @@ public class AddProductController implements Initializable {
             AlertValidation(validatedValue);
         } else {
             if (productToUpdate == null) {
-                Product ProductToAdd = new Product(ProductID, ProductName, ProductPrice, ProductStock, ProductMin, ProductMax);
-                for (Part p : partInvAddToProduct) {
-                    ProductToAdd.addAssociatedPart(p);
-                }
-                inv.addProduct(ProductToAdd);
 
-            } else {
-                Product ProductTUpdate = new Product(ProductID, ProductName, ProductPrice, ProductStock, ProductMin, ProductMax);
-                for (Part p : partInvAddToProduct) {
-                    ProductTUpdate.addAssociatedPart(p);
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.initModality(Modality.NONE);
+                alert.setTitle(String.format(String.format("Add Product: ", ProductName)));
+                alert.setHeaderText("Confirm?");
+                alert.setContentText(String.format("Are you sure you want to add Product: %s", ProductName));
+                Optional<ButtonType> result = alert.showAndWait();
+                // check
+                if (result.get() == ButtonType.OK) {
+                    Product ProductToAdd = new Product(ProductID, ProductName, ProductPrice, ProductStock, ProductMin, ProductMax);
+                    for (Part p : partInvAddToProduct) {
+                        ProductToAdd.addAssociatedPart(p);
+                    }
+
+                    inv.addProduct(ProductToAdd);
+                    AddProductCancel(event);
+                } else {
+                    System.out.println("Not Adding");
                 }
-                inv.updateProduct(index, ProductTUpdate);
+            } else {
+
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.initModality(Modality.NONE);
+                alert.setTitle(String.format(String.format("Update Product: ", ProductName)));
+                alert.setHeaderText("Confirm?");
+                alert.setContentText(String.format("Are you sure you want to update Product: %s", ProductName));
+                Optional<ButtonType> result = alert.showAndWait();
+                // check
+                if (result.get() == ButtonType.OK) {
+                    Product ProductTUpdate = new Product(ProductID, ProductName, ProductPrice, ProductStock, ProductMin, ProductMax);
+                    for (Part p : partInvAddToProduct) {
+                        ProductTUpdate.addAssociatedPart(p);
+                    }
+                    inv.updateProduct(index, ProductTUpdate);
+                    AddProductCancel(event);
+                } else {
+                    System.out.println("Not Updating");
+                }
+
             }
-            AddProductCancel(event);
+
 
         }
 
@@ -327,7 +355,7 @@ public class AddProductController implements Initializable {
 
         /**    @FXML private TextField addProductName;
          @FXML private Label addProductNameValidator;*/
-        System.out.println("ADD PRODUCT NAME" + addProductName.getText());
+//        System.out.println("ADD PRODUCT NAME" + addProductName.getText());
         if (addProductName.getText().isEmpty()) {
             addProductNameValidator.setText("Name can't be empty!");
         } else {
@@ -449,12 +477,16 @@ public class AddProductController implements Initializable {
         addProductMin.setText(String.valueOf(ProductMin));
         addProductMax.setText(String.valueOf(ProductMax));
         //Generate Parts to Delete
+        partInv.addAll(inv.getAllParts());
 
         for(Part p : partInvAddToProduct){
             partInv.remove(p);
         }
         generateDeletePartsTableValues();
         // Set only for items avaliable to be added
+//        for (Part p : partInv){
+//            System.out.println("INSIDE  partInv"  +  p.getPartName());
+//        }
         addParts.setItems(partInv);
         addParts.refresh();
 
@@ -462,7 +494,6 @@ public class AddProductController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
 
 
         if (productToUpdate != null) {
@@ -474,17 +505,17 @@ public class AddProductController implements Initializable {
             ProductID = productToUpdate.getProductID();
             partInvAddToProduct = productToUpdate.getAssociatedPartsList();
 
-            System.out.println("=====UPDATE PRODUCT===");
-            System.out.println("Product Name: " + ProductName);
-            System.out.println("Product Price: " + ProductPrice);
-            System.out.println("Product ProductStock: " + ProductStock);
-            System.out.println("Product ProductMin: " + ProductMin);
-            System.out.println("Product ProductMax: " + ProductMax);
-            System.out.println("Product ProductID: " + ProductID);
+//            System.out.println("=====UPDATE PRODUCT===");
+//            System.out.println("Product Name: " + ProductName);
+//            System.out.println("Product Price: " + ProductPrice);
+//            System.out.println("Product ProductStock: " + ProductStock);
+//            System.out.println("Product ProductMin: " + ProductMin);
+//            System.out.println("Product ProductMax: " + ProductMax);
+//            System.out.println("Product ProductID: " + ProductID);
             populateFileds();
 
 
-        } else{
+        } else {
             generateAddPartsTableValues();
 
         }
