@@ -218,7 +218,6 @@ public class AddPartController implements Initializable {
     void addPartMaxValidation(KeyEvent key) {
         /** @FXML private TextField addPartMax;
          @FXML private  Label addPartMaxValidator;*/
-        //TODO Debug this crap
         if(!key.getCode().toString().contains("TAB")){
             if (addPartMax.getText()!=null && Util.isNumeric(addPartMax.getText())) {
                 MaxVal = Integer.parseInt(addPartMax.getText()); // will use this to construct

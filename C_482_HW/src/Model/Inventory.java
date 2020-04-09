@@ -51,6 +51,22 @@ public class Inventory {
 
     };
 
+    public static Integer generateProductPart(){
+        // Little Recursion here
+        Integer id = generateId();
+        ArrayList<Integer> productIds = new ArrayList<>();
+        for (Product p : getAllProducts()){
+            productIds.add(p.getProductID());
+        }
+
+        if(productIds.contains(id)){
+            return generateIdPart();
+        }
+
+        return  id;
+
+    };
+
 
 
     // Add Part, Product

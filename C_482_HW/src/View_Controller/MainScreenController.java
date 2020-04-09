@@ -107,10 +107,6 @@ public class MainScreenController implements Initializable {
         this.inv = inv;
     }
 
-    @FXML
-    void activateAddProductsScreen(ActionEvent event) {
-
-    }
 
     @FXML
     void activateDeletePartsScreen(ActionEvent event) {
@@ -147,6 +143,7 @@ public class MainScreenController implements Initializable {
                 // check
                 if (result.get() == ButtonType.OK) {
                     partInv.remove(partSelected);
+                    inv.removePart(partSelected);
                     viewParts.setItems(partInv);
                     System.out.println(" Part " + partSelected.getPartName() + " was removed");
                 } else {
@@ -183,6 +180,7 @@ public class MainScreenController implements Initializable {
             // check
             if (result.get() == ButtonType.OK) {
                 productInv.remove(ProductSelected);
+                inv.removeProduct(ProductSelected);
                 viewProducts.setItems(productInv);
                 System.out.println(" Part " + ProductSelected.getProductName() + " was removed");
             } else {
@@ -206,10 +204,7 @@ public class MainScreenController implements Initializable {
 
 
 
-    @FXML
-    void activateModifyProductsScreen(ActionEvent event) {
 
-    }
 
     @FXML
     void lookupPartsSearch(ActionEvent event) {
@@ -343,6 +338,36 @@ public class MainScreenController implements Initializable {
 
     }
 
+
+    @FXML
+    void activateAddProductsScreen(ActionEvent event) throws IOException {
+
+        try{
+            FXMLLoader loader = new FXMLLoader();
+
+            System.out.println("==================PRODUCT SCREEN=============");
+            for ( Part p : inv.getAllParts()){
+                System.out.println(p);
+            }
+
+            View_Controller.AddProductController controller = new View_Controller.AddProductController(inv,null,null);
+            loader.setController(controller);
+            loader.setLocation(getClass().getResource("AddProduct.fxml"));
+            Parent product_page_parent = loader.load();
+            Scene main_page_scene = new Scene(product_page_parent);
+            Stage app_stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            app_stage.hide(); //optional
+            app_stage.setScene(main_page_scene);
+            app_stage.show();
+        } catch (IOException err){
+            System.out.println("Couldn't load template");
+            System.out.println(err.getMessage());
+            return;
+        }
+
+
+    }
+
     @FXML
     void activateModifyPartsScreen(ActionEvent event) throws IOException {
 
@@ -375,5 +400,37 @@ public class MainScreenController implements Initializable {
 
     }
 
+    @FXML
+    void activateModifyProductsScreen(ActionEvent event) throws IOException {
+        if (productInv.size() != 0) {
+            Product productSelected = viewProducts.getSelectionModel().getSelectedItem();
+            for (int i = 0; i < productInv.size(); i++) {
+                if(productSelected == productInv.get(i)){
+
+                    FXMLLoader loader = new FXMLLoader();
+                    View_Controller.AddProductController controller = new AddProductController(inv, productSelected,i);
+                    loader.setController(controller);
+                    loader.setLocation(getClass().getResource("AddProduct.fxml"));
+                    Parent product_page_parent = loader.load();
+                    Scene main_page_scene = new Scene(product_page_parent);
+                    Stage app_stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                    app_stage.hide(); //optional
+                    app_stage.setScene(main_page_scene);
+                    app_stage.show();
+
+                }
+            }
+
+
+            //partSelected
+        }else {
+            Alert nodataToRemove = new Alert(Alert.AlertType.INFORMATION);
+            nodataToRemove.setTitle("There is nothing to modify");
+            nodataToRemove.setHeaderText("No Products available");
+            nodataToRemove.showAndWait();
+        }
+    }
+
 
 }
+
