@@ -1,4 +1,4 @@
-object LearningScala1 {
+
   // VALUES are immutable constants. You can't change them once defined.
   val hello: String = "Hola!"                     //> hello  : String = Hola!
   println(hello)                                  //> Hola!
@@ -69,4 +69,7 @@ object LearningScala1 {
   // three decimal places of precision to the right.
   // Just write your code below here; any time you save the file it will automatically display the results!
 
-}
+  def lookAtyou(a:String): String ={
+    return a + "Poop"
+  }
+  println(s"The s prefix isn't limited to variables; I can include any expression. Like ${ lookAtyou("Hello") }")
