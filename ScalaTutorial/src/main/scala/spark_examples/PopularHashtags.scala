@@ -30,7 +30,10 @@ object PopularHashtags {
     
     // Blow out each word into a new DStream every word in every tweet that comes in
     val tweetwords = statuses.flatMap(tweetText => tweetText.split(" "))
-    
+
+    // Try to do someteing as word count
+    val wordOneCount = tweetwords.map(word => (word,1)) // tuple of ("hello",1)
+    val wordGlobalCount = wordOneCount.reduceByKeyAndWindow( (x,y) => x + y, (x,y) => x - y, Seconds(300), Seconds(1))
     // Now eliminate anything that's not a hashtag
     val hashtags = tweetwords.filter(word => word.startsWith("#"))
     
@@ -47,6 +50,8 @@ object PopularHashtags {
     
     // Print the top 10
     sortedResults.print
+
+    wordGlobalCount.transform(rdd => rdd.sortBy(x => x._2,false  )).print(20)
     
     // Set a checkpoint directory, and kick it all off
     // I could watch this all day!
