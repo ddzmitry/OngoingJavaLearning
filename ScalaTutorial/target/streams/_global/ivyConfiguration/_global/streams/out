@@ -1,0 +1,1 @@
+[warn] insecure HTTP request is deprecated 'http://scala-tools.org/repo-snapshots'; switch to HTTPS or opt-in as ("snapshots-repo" at "http://scala-tools.org/repo-snapshots").withAllowInsecureProtocol(true)
