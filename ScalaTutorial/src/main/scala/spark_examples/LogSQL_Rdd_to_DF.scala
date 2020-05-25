@@ -69,7 +69,9 @@ object LogSQL {
         spark.sqlContext.sql("select agent, count(*) as total from requests group by agent")
       println(s"========= $time =========")
       wordCountsDataFrame.show()
-      
+
+      wordCountsDataFrame.write.json(f"out/json_$time")
+      wordCountsDataFrame.write.parquet(f"out/parquet_$time")
       // If you want to dump data into an external database instead, check out the
       // org.apache.spark.sql.DataFrameWriter class! It can write dataframes via
       // jdbc and many other formats! You can use the "append" save mode to keep
