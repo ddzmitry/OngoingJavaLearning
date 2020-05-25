@@ -1,1 +1,1 @@
-["sbt.Task[scala.collection.Seq[scala.Tuple2[java.nio.file.Path, sbt.nio.FileStamp]]]",{"hashes":[["/Users/dzmitrydubarau/Documents/Learning/OngoingJavaLearning/ScalaTutorial/build.sbt","722ed7e98cac7fba76bf72492165aa6dba83a8d8"]],"lastModifiedTimes":[]}]
+["sbt.Task[scala.collection.Seq[scala.Tuple2[java.nio.file.Path, sbt.nio.FileStamp]]]",{"hashes":[["/Users/dzmitrydubarau/Documents/Learning/OngoingJavaLearning/ScalaTutorial/build.sbt","dd8fc9641350a755ac8cb6fb3c6e9c7fe7090ca9"]],"lastModifiedTimes":[]}]
