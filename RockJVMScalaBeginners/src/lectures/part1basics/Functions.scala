@@ -31,7 +31,7 @@ def aFunctionWithSideefects(aString: String) : Unit = println(aString)
 
   // challanges
   def factorial(num: Int): Int ={
-    if(num <= 1) num else num * factorial(num-1)
+    if(num <= 1) 1 else num * factorial(num-1)
   }
   // 3*2*1 = 6
   // 4 * 3 *2 *1 = 24
@@ -46,4 +46,14 @@ def aFunctionWithSideefects(aString: String) : Unit = println(aString)
     }
   }
   println(fib(10))
+
+  def isPrime(n: Int) : Boolean = {
+// Aux function
+    def isPrimeUnitl(t: Int) : Boolean = {
+      if (t <= 1) true
+      else n % t != 0 && isPrimeUnitl(t-1)
+    }
+    isPrimeUnitl(n/2)
+  }
+  println(isPrime(5))
 }

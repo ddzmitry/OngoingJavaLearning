@@ -1,5 +1,7 @@
 package lectures.part1basics
 
+import scala.annotation.tailrec
+
 object Functions extends  App {
 
   def aFunction(a: String, b: Int ) : String = {
@@ -56,4 +58,37 @@ def aFunctionWithSideefects(aString: String) : Unit = println(aString)
     isPrimeUnitl(n/2)
   }
   println(isPrime(5))
+
+  @tailrec
+  def concatenateTailrec(aString: String, n: Int, accumulator: String): String =
+    if (n <= 0) accumulator
+    else concatenateTailrec(aString, n-1, aString + accumulator)
+
+  println(concatenateTailrec("hello", 3, ""))
+
+
+  def isPrime2(n: Int): Boolean = {
+    @tailrec
+    def isPrimeTailrec(t: Int, isStillPrime: Boolean): Boolean =
+      if (!isStillPrime) false
+      else if (t <= 1) true
+      else isPrimeTailrec(t - 1, n % t != 0 && isStillPrime)
+
+    isPrimeTailrec(n / 2, true)
+  }
+
+  println(isPrime2(2003))
+  println(isPrime2(629))
+
+  def fibonacci(n: Int): Int = {
+    @tailrec
+    def fiboTailrec(i: Int, last: Int, nextToLast: Int): Int =
+      if(i >= n) last
+      else fiboTailrec(i + 1, last + nextToLast, last)
+
+    if (n <= 2) 1
+    else fiboTailrec(2, 1, 1)
+  }
+
+  println(fibonacci(8)) // 1 1 2 3 5 8 13, 21
 }
