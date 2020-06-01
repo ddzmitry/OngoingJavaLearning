@@ -205,6 +205,14 @@ object ListTest extends App {
   println(listOfIntegers.zipWith[String, String](listofStrings, _ + "-" + _))
   println(listOfIntegers.fold(0)(_ + _)) // colapsing data
 
+
+  // for comprehensions
+  val combinations = for {
+    n <- listOfIntegers
+    string <- listofStrings
+  } yield n + "-" + string
+  println(combinations)
+
 //  val list = new Cons(1,Empty)
 //  println(list.head) //1
 //  val list2 = new Cons(2,new Cons(3, new Cons(4,Empty)))
